@@ -10,12 +10,12 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 const scriptProps =
   typeof window === "undefined" ? undefined : ({ type: "text/plain" } as const);
 
-/** Adds/removes the `dark` class on <html>. Defaults to dark; the choice is remembered per visitor. */
+/** Adds/removes the `dark` class on <html>. Defaults to light; dark only when the visitor toggles it (remembered per visitor). */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="light"
       enableSystem={false}
       disableTransitionOnChange
       scriptProps={scriptProps}
