@@ -22,13 +22,18 @@ export function FeaturedBadge({ className }: { className?: string }) {
   );
 }
 
-/**
- * Status badge. "Available" needs no badge. "Sold" is deliberately hidden for now
- * (business decision) — to show it, add a case below.
- */
+const STATUS_STYLES: Record<Property["status"], string> = {
+  Available: "border-emerald/30 bg-background/90 text-emerald",
+  "Under Offer": "border-amber-500/40 bg-background/90 text-amber-700 dark:text-amber-400",
+  Sold: "border-border bg-muted/90 text-muted-foreground",
+};
+
+/** Available (green) · Under Offer (amber) · Sold (grey), with a small dot. */
 export function StatusBadge({ status, className }: { status: Property["status"]; className?: string }) {
-  if (status !== "Under Offer") return null;
   return (
-    <span className={cn(base, "border-border bg-background/90 text-foreground", className)}>Under Offer</span>
+    <span className={cn(base, STATUS_STYLES[status], className)}>
+      <span aria-hidden className="size-1.5 rounded-full bg-current" />
+      {status}
+    </span>
   );
 }

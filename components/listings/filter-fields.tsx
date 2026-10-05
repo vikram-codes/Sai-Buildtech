@@ -17,6 +17,7 @@ const BED_OPTIONS = [1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: `${n}
 const STATUS_OPTIONS = [
   { value: "Available", label: "Available" },
   { value: "Under Offer", label: "Under offer" },
+  { value: "Sold", label: "Sold" },
 ];
 
 type FieldProps = {

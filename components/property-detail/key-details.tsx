@@ -11,8 +11,7 @@ export function KeyDetails({ bedrooms, bathrooms, area_sqft, property_type, stat
     bathrooms ? { icon: Bath, label: "Bathrooms", value: String(bathrooms) } : null,
     area_sqft ? { icon: Ruler, label: "Area", value: formatArea(area_sqft) } : null,
     { icon: Building2, label: "Type", value: property_type },
-    // "Sold" is hidden for now (business decision, same as the card badges)
-    status !== "Sold" ? { icon: CircleCheck, label: "Status", value: status } : null,
+    { icon: CircleCheck, label: "Status", value: status },
   ].filter((item) => item !== null);
 
   return (
