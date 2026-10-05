@@ -69,6 +69,17 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyCardData
   return data;
 }
 
+/** Every published slug — used to pre-build the detail pages at deploy time. */
+export async function getPublishedSlugs(): Promise<string[]> {
+  "use cache";
+  cacheTag(PROPERTIES_TAG);
+  cacheLife("hours");
+
+  const { data, error } = await createPublicClient().from("properties").select("slug").eq("is_published", true);
+  if (error) fail("getPublishedSlugs", error);
+  return data.map((row) => row.slug);
+}
+
 /** Number of published listings in each city, e.g. { Delhi: 8, Noida: 3, Gurugram: 4 }. */
 export async function getCityCounts(): Promise<Record<City, number>> {
   "use cache";

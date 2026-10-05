@@ -184,3 +184,13 @@
     }
   }
 }
+
+/*
+ * Listing pages show their own WhatsApp/Call/Enquire bar on phones (mobile-contact-bar.tsx),
+ * so hide the round floating WhatsApp button there to stop the two overlapping.
+ */
+@media (width < 48rem) {
+  body:has([data-hide-whatsapp-float]) .whatsapp-float {
+    display: none;
+  }
+}
