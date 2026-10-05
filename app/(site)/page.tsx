@@ -1,33 +1,27 @@
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { Phone } from "lucide-react";
+import { Container } from "@/components/layout/container";
+import { WhatsAppIcon } from "@/components/shared/whatsapp-icon";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/site-config";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 /*
- * Early homepage (Phase 0). Grows into the full homepage in Phase 6
- * (hero imagery, search bar, featured properties, why choose us).
+ * Early homepage. Header/footer come from app/(site)/layout.tsx.
+ * Grows into the full homepage in Phase 6 (hero imagery, search bar, featured properties, why choose us).
  */
 
 export default function HomePage() {
   const { contact } = siteConfig;
 
   return (
-    <div className="relative flex min-h-svh flex-1 flex-col overflow-hidden">
+    <section className="relative flex flex-1 items-center overflow-hidden">
       {/* Soft gold glow behind the hero */}
       <div
         aria-hidden
         className="pointer-events-none absolute -top-40 left-1/2 h-120 w-225 -translate-x-1/2 rounded-full bg-gold/10 blur-3xl"
       />
 
-      <header className="relative mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6 sm:px-6">
-        <span className="font-serif text-2xl tracking-tight">
-          Sai <span className="text-gold">Buildtech</span>
-        </span>
-        <ThemeToggle />
-      </header>
-
-      <main className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:px-6">
+      <Container className="relative py-24 text-center sm:py-32">
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <p className="text-xs font-semibold tracking-[0.3em] text-gold uppercase">
             {siteConfig.cities.join(" · ")}
@@ -44,9 +38,9 @@ export default function HomePage() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" className="w-full bg-[#25D366] text-white hover:bg-[#25D366]/90 sm:w-auto">
+            <Button asChild size="lg" variant="whatsapp" className="w-full sm:w-auto">
               <a href={buildWhatsAppLink()} target="_blank" rel="noopener noreferrer">
-                <MessageCircle /> Chat on WhatsApp
+                <WhatsAppIcon className="size-5" /> Chat on WhatsApp
               </a>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto">
@@ -58,18 +52,7 @@ export default function HomePage() {
 
           <p className="mt-8 text-sm text-muted-foreground">Our full property catalogue is launching soon.</p>
         </div>
-      </main>
-
-      <footer className="relative border-t">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:justify-between sm:px-6">
-          <span className="flex items-center gap-2 text-center">
-            <MapPin className="size-4 shrink-0 text-gold" /> {contact.address.full}
-          </span>
-          <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:text-foreground">
-            <Mail className="size-4 text-gold" /> {contact.email}
-          </a>
-        </div>
-      </footer>
-    </div>
+      </Container>
+    </section>
   );
 }

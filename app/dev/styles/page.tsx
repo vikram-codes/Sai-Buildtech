@@ -129,7 +129,7 @@ export default function StylePreviewPage() {
       <section className="space-y-4">
         <h2 className="text-2xl">Contact</h2>
         <div className="flex flex-wrap gap-3">
-          <Button asChild className="bg-[#25D366] text-white hover:bg-[#25D366]/90">
+          <Button asChild variant="whatsapp">
             <a href={buildWhatsAppLink()} target="_blank" rel="noopener noreferrer">
               <MessageCircle /> Chat on WhatsApp
             </a>

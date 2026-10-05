@@ -114,6 +114,9 @@
   --color-ring: var(--ring);
   --color-gold: var(--gold);
   --color-emerald: var(--emerald);
+  /* WhatsApp brand green — same in both themes. Navy text on it (white would be ~2:1 contrast). */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-foreground: #0f172a;
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
