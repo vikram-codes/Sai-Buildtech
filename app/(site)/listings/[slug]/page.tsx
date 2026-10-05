@@ -68,7 +68,38 @@ async function SimilarProperties({ property }: { property: Property }) {
   );
 }
 
-export default async function PropertyPage({ params }: PageProps<"/listings/[slug]">) {
+/** Grey placeholder while a listing that wasn't pre-built loads for the first time. */
+function PropertyPageSkeleton() {
+  return (
+    <Container className="pt-6 pb-20 sm:pt-8">
+      <div className="mb-6 h-4 w-64 animate-pulse rounded bg-muted" />
+      <div className="aspect-[4/3] animate-pulse rounded-2xl bg-muted md:aspect-[2/1]" />
+      <div className="mt-10 grid gap-12 lg:grid-cols-[1fr_380px]">
+        <div className="space-y-4">
+          <div className="h-6 w-32 animate-pulse rounded bg-muted" />
+          <div className="h-12 w-3/4 animate-pulse rounded bg-muted" />
+          <div className="h-20 animate-pulse rounded-xl bg-muted" />
+        </div>
+        <div className="h-96 animate-pulse rounded-2xl bg-muted" />
+      </div>
+    </Container>
+  );
+}
+
+/*
+ * The slug is part of the URL, which (for listings added after the last build) is only known
+ * when someone visits — so it's read inside <Suspense> (Next 16 / Cache Components rule).
+ * Pre-built listings don't show the skeleton at all.
+ */
+export default function PropertyPage({ params }: PageProps<"/listings/[slug]">) {
+  return (
+    <Suspense fallback={<PropertyPageSkeleton />}>
+      <PropertyContent params={params} />
+    </Suspense>
+  );
+}
+
+async function PropertyContent({ params }: Pick<PageProps<"/listings/[slug]">, "params">) {
   const property = await getPropertyBySlug((await params).slug);
   if (!property) notFound();
 

@@ -13,9 +13,39 @@ import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
+/**
+ * Menu links for the phone panel. Reads the URL only when the panel is open (the panel's
+ * contents aren't rendered while closed), so it never blocks the page from pre-building.
+ */
+function MobileNavLinks({ onNavigate }: { onNavigate: () => void }) {
+  const pathname = usePathname();
+  return (
+    <ul className="space-y-1">
+      {siteConfig.nav.map(({ label, href }) => {
+        const active = isActiveLink(pathname, href);
+        return (
+          <li key={href}>
+            <Link
+              href={href}
+              onClick={onNavigate}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex items-center gap-3 py-3 font-serif text-3xl transition-colors",
+                active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <span className={cn("h-px w-5 bg-gold transition-opacity", active ? "opacity-100" : "opacity-0")} />
+              {label}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /** Phone/tablet menu: slides in from the right. Hidden from md (768px) up. */
 export function MobileNav() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { contact } = siteConfig;
 
@@ -37,27 +67,7 @@ export function MobileNav() {
         </div>
 
         <nav aria-label="Main" className="flex-1 px-6 py-6">
-          <ul className="space-y-1">
-            {siteConfig.nav.map(({ label, href }) => {
-              const active = isActiveLink(pathname, href);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "flex items-center gap-3 py-3 font-serif text-3xl transition-colors",
-                      active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <span className={cn("h-px w-5 bg-gold transition-opacity", active ? "opacity-100" : "opacity-0")} />
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <MobileNavLinks onNavigate={() => setOpen(false)} />
         </nav>
 
         <div className="space-y-3 border-t px-6 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">

@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { ActiveNavLinks, NavLinks } from "@/components/layout/nav-links";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { WhatsAppIcon } from "@/components/shared/whatsapp-icon";
 import { Button } from "@/components/ui/button";
-import { isActiveLink } from "@/lib/nav";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function SiteHeader() {
-  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
 
   // See-through at the very top, solid with a blur once the page scrolls
@@ -40,26 +37,10 @@ export function SiteHeader() {
         <Logo />
 
         <nav aria-label="Main" className="hidden md:block">
-          <ul className="flex items-center gap-8">
-            {siteConfig.nav.map(({ label, href }) => {
-              const active = isActiveLink(pathname, href);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "relative py-2 text-sm font-medium transition-colors hover:text-foreground",
-                      "after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:bg-gold after:transition-transform after:duration-300",
-                      active ? "text-foreground after:scale-x-100" : "text-muted-foreground after:scale-x-0 hover:after:scale-x-100",
-                    )}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          {/* Only the link list reads the URL, so only it waits; the rest of the header pre-builds */}
+          <Suspense fallback={<NavLinks />}>
+            <ActiveNavLinks />
+          </Suspense>
         </nav>
 
         <div className="flex items-center gap-1 sm:gap-2">
