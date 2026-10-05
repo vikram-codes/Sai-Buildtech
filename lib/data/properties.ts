@@ -1,6 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { PAGE_SIZE, type ListingFilters } from "@/lib/data/filters";
+import { CITIES, type City } from "@/lib/site-config";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Tables } from "@/types/database";
 
@@ -66,6 +67,20 @@ export async function getFeaturedProperties(limit = 6): Promise<PropertyCardData
 
   if (error) fail("getFeaturedProperties", error);
   return data;
+}
+
+/** Number of published listings in each city, e.g. { Delhi: 8, Noida: 3, Gurugram: 4 }. */
+export async function getCityCounts(): Promise<Record<City, number>> {
+  "use cache";
+  cacheTag(PROPERTIES_TAG);
+  cacheLife("hours");
+
+  const { data, error } = await createPublicClient().from("properties").select("city").eq("is_published", true);
+  if (error) fail("getCityCounts", error);
+
+  const counts = Object.fromEntries(CITIES.map((city) => [city, 0])) as Record<City, number>;
+  for (const { city } of data) counts[city] += 1;
+  return counts;
 }
 
 /** The catalogue query with all filters applied (no ordering/paging). */

@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/property/property-card";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { BUDGETS, buildListingsUrl } from "@/lib/budgets";
 import { parseListingFilters } from "@/lib/data/filters";
 import {
+  getCityCounts,
   getFeaturedProperties,
   getProperties,
   getPropertyBySlug,
@@ -37,7 +39,22 @@ const FILTER_CHECKS: { params: Record<string, string>; expected: number }[] = [
   { params: { q: "%' or 1=1 --" }, expected: 0 }, // symbols stripped → harmless search for "or 11"
 ];
 
+// Homepage search: each budget → URL → filters → expected results (expected values from the database).
+// Note "Under ₹1 Cr" only matches the 3 rentals (monthly rents are small numbers).
+const BUDGET_CHECKS: Record<string, number> = {
+  "under-1cr": 3,
+  "1-3cr": 3,
+  "3-5cr": 0,
+  "5-10cr": 4,
+  "10cr-plus": 5,
+};
+
 type Check = { label: string; ok: boolean; detail: string };
+
+/** Follow a /listings URL through the real filter parsing, like the catalogue page will. */
+function filtersFromUrl(url: string) {
+  return parseListingFilters(Object.fromEntries(new URL(url, "http://x").searchParams));
+}
 
 async function runChecks(): Promise<Check[]> {
   const checks: Check[] = [];
@@ -47,6 +64,31 @@ async function runChecks(): Promise<Check[]> {
     const label = Object.keys(params).length ? new URLSearchParams(params).toString() : "(no filters)";
     checks.push({ label: `getProperties ?${label}`, ok: total === expected, detail: `${total} (expected ${expected})` });
   }
+
+  for (const budget of BUDGETS) {
+    const url = buildListingsUrl({ budget: budget.id });
+    const { total } = await getProperties(filtersFromUrl(url));
+    const expected = BUDGET_CHECKS[budget.id];
+    checks.push({ label: `search "${budget.label}" → ${url}`, ok: total === expected, detail: `${total} (expected ${expected})` });
+  }
+
+  const combo = buildListingsUrl({ city: "Noida", type: "Villa", budget: "5-10cr" });
+  const comboTotal = (await getProperties(filtersFromUrl(combo))).total;
+  checks.push({
+    label: `search Noida + Villa + ₹5–10 Cr → ${combo}`,
+    ok: comboTotal === 1 && combo === "/listings?city=Noida&type=Villa&minPrice=50000000&maxPrice=100000000",
+    detail: `${comboTotal} (expected 1)`,
+  });
+
+  const anyUrl = buildListingsUrl({});
+  checks.push({ label: "search with nothing chosen", ok: anyUrl === "/listings", detail: anyUrl });
+
+  const cities = await getCityCounts();
+  checks.push({
+    label: "getCityCounts()",
+    ok: cities.Delhi === 8 && cities.Noida === 3 && cities.Gurugram === 4,
+    detail: JSON.stringify(cities),
+  });
 
   const pastEnd = await getProperties(parseListingFilters({ page: "99" }));
   checks.push({
