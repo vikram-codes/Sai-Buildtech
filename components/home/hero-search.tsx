@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Building2, IndianRupee, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BUDGETS, buildListingsUrl } from "@/lib/budgets";
+import { BUDGETS } from "@/lib/budgets";
+import { buildListingsUrl } from "@/lib/listings-url";
 import { CITIES } from "@/lib/site-config";
 import { Constants } from "@/types/database";
 

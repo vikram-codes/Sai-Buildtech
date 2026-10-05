@@ -95,6 +95,8 @@ function filteredQuery(filters: ListingFilters, options: { count: "exact"; head?
   if (beds) query = query.gte("bedrooms", beds);
   if (minPrice) query = query.gte("price", minPrice);
   if (maxPrice) query = query.lte("price", maxPrice);
+  // Budgets are sale prices. Without this, "Under ₹1 Cr" would match monthly rents (₹45,000 < ₹1 Cr).
+  if (minPrice || maxPrice) query = query.eq("listing_type", "Sale");
   // `q` is already stripped to letters/numbers/spaces/hyphens in filters.ts, so it's safe inside or()
   if (q) query = query.or(`location.ilike.%${q}%,title.ilike.%${q}%`);
 

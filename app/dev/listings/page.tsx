@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/property/property-card";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { BUDGETS, buildListingsUrl } from "@/lib/budgets";
+import { BUDGETS } from "@/lib/budgets";
+import { buildListingsUrl } from "@/lib/listings-url";
 import { parseListingFilters } from "@/lib/data/filters";
 import {
   getCityCounts,
@@ -30,7 +31,7 @@ const FILTER_CHECKS: { params: Record<string, string>; expected: number }[] = [
   { params: { city: "Noida" }, expected: 3 },
   { params: { type: "Villa" }, expected: 3 },
   { params: { beds: "4" }, expected: 8 },
-  { params: { maxPrice: "20000000" }, expected: 5 },
+  { params: { maxPrice: "20000000" }, expected: 2 }, // sale only: Dwarka ₹1.8 Cr, Krishna Nagar ₹1.6 Cr
   { params: { q: "defence" }, expected: 2 },
   { params: { city: "Delhi", type: "Builder Floor" }, expected: 4 },
   { params: { minPrice: "50000000", maxPrice: "150000000" }, expected: 7 },
@@ -40,9 +41,9 @@ const FILTER_CHECKS: { params: Record<string, string>; expected: number }[] = [
 ];
 
 // Homepage search: each budget → URL → filters → expected results (expected values from the database).
-// Note "Under ₹1 Cr" only matches the 3 rentals (monthly rents are small numbers).
+// Budgets only match sale listings — the sample data has nothing for sale under ₹1 Cr.
 const BUDGET_CHECKS: Record<string, number> = {
-  "under-1cr": 3,
+  "under-1cr": 0,
   "1-3cr": 3,
   "3-5cr": 0,
   "5-10cr": 4,

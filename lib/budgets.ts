@@ -14,17 +14,3 @@ export const BUDGETS = [
 ] as const;
 
 export type BudgetId = (typeof BUDGETS)[number]["id"];
-
-/** Build a /listings URL from search choices. Empty choices are left out. */
-export function buildListingsUrl({ city, type, budget }: { city?: string; type?: string; budget?: string }) {
-  const params = new URLSearchParams();
-  if (city) params.set("city", city);
-  if (type) params.set("type", type);
-
-  const range = BUDGETS.find((b) => b.id === budget);
-  if (range?.min) params.set("minPrice", String(range.min));
-  if (range?.max) params.set("maxPrice", String(range.max));
-
-  const query = params.toString();
-  return query ? `/listings?${query}` : "/listings";
-}
