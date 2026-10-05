@@ -36,13 +36,20 @@ function Thumb({ property, className }: { property: AdminProperty; className?: s
   );
 }
 
-function Summary({ property }: { property: AdminProperty }) {
+function Summary({ property, showUpdated }: { property: AdminProperty; showUpdated?: boolean }) {
   return (
     <div className="min-w-0">
-      <p className="truncate font-medium">{property.title}</p>
+      <p className="truncate font-medium" title={property.title}>
+        {property.title}
+      </p>
       <p className="truncate text-xs text-muted-foreground">
         {property.property_type} · {property.listing_type === "Rent" ? "For Rent" : "For Sale"} · {property.location}, {property.city}
       </p>
+      {showUpdated && (
+        <p className="text-xs text-muted-foreground">
+          Updated <TimeAgo iso={property.updated_at} />
+        </p>
+      )}
     </div>
   );
 }
@@ -53,9 +60,9 @@ function Row({ property }: { property: AdminProperty }) {
   return (
     <tr className={cn("border-b last:border-0", !controls.state.is_published && "bg-muted/40")}>
       <td className="py-3 pr-3 pl-4">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <Thumb property={property} className={cn("h-12 w-16", !controls.state.is_published && "opacity-50")} />
-          <Summary property={property} />
+          <Summary property={property} showUpdated />
         </div>
       </td>
       <td className="px-3 py-3 font-serif text-lg whitespace-nowrap text-gold">
@@ -69,9 +76,6 @@ function Row({ property }: { property: AdminProperty }) {
       </td>
       <td className="px-3 py-3">
         <PublishedSwitch controls={controls} title={property.title} />
-      </td>
-      <td className="px-3 py-3 text-sm whitespace-nowrap text-muted-foreground">
-        <TimeAgo iso={property.updated_at} />
       </td>
       <td className="py-3 pr-4 pl-3">
         <RowLinks property={property} />
@@ -162,8 +166,17 @@ export function ListingsTable({ properties }: { properties: AdminProperty[] }) {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden overflow-x-auto rounded-xl border bg-card lg:block">
-            <table className="w-full text-left">
+          {/* Fixed column widths: the title column shrinks (with "…") so the actions always fit */}
+          <div className="hidden rounded-xl border bg-card xl:block">
+            <table className="w-full table-fixed text-left">
+              <colgroup>
+                <col />
+                <col className="w-36" />
+                <col className="w-40" />
+                <col className="w-24" />
+                <col className="w-32" />
+                <col className="w-32" />
+              </colgroup>
               <thead className="border-b text-xs tracking-wide text-muted-foreground uppercase">
                 <tr>
                   <th className="py-3 pr-3 pl-4 font-medium">Listing</th>
@@ -171,7 +184,6 @@ export function ListingsTable({ properties }: { properties: AdminProperty[] }) {
                   <th className="px-3 py-3 font-medium">Status</th>
                   <th className="px-3 py-3 font-medium">Featured</th>
                   <th className="px-3 py-3 font-medium">On website</th>
-                  <th className="px-3 py-3 font-medium">Updated</th>
                   <th className="py-3 pr-4 pl-3 font-medium">
                     <span className="sr-only">Actions</span>
                   </th>
@@ -186,7 +198,7 @@ export function ListingsTable({ properties }: { properties: AdminProperty[] }) {
           </div>
 
           {/* Phone / tablet cards */}
-          <ul className="grid gap-3 lg:hidden">
+          <ul className="grid gap-3 md:grid-cols-2 xl:hidden">
             {visible.map((p) => (
               <Card key={p.id} property={p} />
             ))}
