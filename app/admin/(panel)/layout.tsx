@@ -4,7 +4,7 @@ import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { requireAdmin } from "@/lib/auth";
-import { getAdminStats } from "@/lib/data/admin";
+import { getNewInquiryCount } from "@/lib/data/admin";
 
 /*
  * The admin gate. Every page in app/admin/(panel)/ only renders for a logged-in admin.
@@ -12,12 +12,13 @@ import { getAdminStats } from "@/lib/data/admin";
  */
 
 async function AdminGate({ children }: { children: React.ReactNode }) {
-  const admin = await requireAdmin(); // redirects to /admin/login if not allowed
-  const stats = await getAdminStats();
+  // Run side by side (one round trip instead of two). If the visitor isn't an admin,
+  // requireAdmin redirects and the count is simply discarded — the database only counts for admins anyway.
+  const [admin, newInquiries] = await Promise.all([requireAdmin(), getNewInquiryCount()]);
   return (
     <>
       <AdminHeader email={admin.email} />
-      <AdminNav newInquiries={stats.newInquiries} />
+      <AdminNav newInquiries={newInquiries} />
       <Toaster position="bottom-right" richColors closeButton />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 sm:py-10">{children}</main>
     </>

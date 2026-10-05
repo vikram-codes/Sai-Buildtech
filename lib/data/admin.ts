@@ -46,42 +46,28 @@ export type AdminInquiry = Tables<"inquiries"> & {
   property: { title: string; slug: string } | null;
 };
 
-/** Inquiries, newest first, with the title/slug of the listing they're about. */
-export async function getInquiries(filter: InquiryFilter): Promise<AdminInquiry[]> {
+/**
+ * All inquiries (newest first, up to 500) in ONE query — the page filters New/Handled and
+ * counts them itself, instead of making a separate round trip to Supabase for each.
+ */
+export async function getInquiries(): Promise<AdminInquiry[]> {
   const supabase = await createClient();
-  let query = supabase
+  const { data, error } = await supabase
     .from("inquiries")
     .select("*, property:properties(title, slug)")
     .order("created_at", { ascending: false })
-    .limit(200);
-  if (filter === "new") query = query.eq("handled", false);
-  if (filter === "handled") query = query.eq("handled", true);
-
-  const { data, error } = await query;
+    .limit(500);
   if (error) fail("getInquiries", error);
   return data;
 }
 
-/** Counts for the summary row and the "Inquiries (n)" tab. */
-export async function getAdminStats() {
+/** How many inquiries are still new — for the "Inquiries (n)" tab. One small query. */
+export async function getNewInquiryCount(): Promise<number> {
   const supabase = await createClient();
-  const [listings, hidden, featured, newInquiries, handled] = await Promise.all([
-    supabase.from("properties").select("id", { count: "exact", head: true }),
-    supabase.from("properties").select("id", { count: "exact", head: true }).eq("is_published", false),
-    supabase.from("properties").select("id", { count: "exact", head: true }).eq("featured", true),
-    supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("handled", false),
-    supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("handled", true),
-  ]);
-
-  for (const [name, result] of Object.entries({ listings, hidden, featured, newInquiries, handled })) {
-    if (result.error) fail(`getAdminStats:${name}`, result.error);
-  }
-
-  return {
-    listings: listings.count ?? 0,
-    hiddenListings: hidden.count ?? 0,
-    featuredListings: featured.count ?? 0,
-    newInquiries: newInquiries.count ?? 0,
-    handledInquiries: handled.count ?? 0,
-  };
+  const { count, error } = await supabase
+    .from("inquiries")
+    .select("id", { count: "exact", head: true })
+    .eq("handled", false);
+  if (error) fail("getNewInquiryCount", error);
+  return count ?? 0;
 }

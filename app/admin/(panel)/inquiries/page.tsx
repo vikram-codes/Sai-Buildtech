@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InquiryList } from "@/components/admin/inquiry-list";
-import { getAdminStats, getInquiries, type InquiryFilter } from "@/lib/data/admin";
+import { getInquiries, type InquiryFilter } from "@/lib/data/admin";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Inquiries" };
@@ -15,12 +15,16 @@ const EMPTY: Record<InquiryFilter, string> = {
 export default async function InquiriesPage({ searchParams }: PageProps<"/admin/inquiries">) {
   const show = (await searchParams).show;
   const filter: InquiryFilter = show === "handled" || show === "all" ? show : "new";
-  const [inquiries, stats] = await Promise.all([getInquiries(filter), getAdminStats()]);
+  // One query for everything; filter and count here
+  const all = await getInquiries();
+  const fresh = all.filter((i) => !i.handled);
+  const handled = all.filter((i) => i.handled);
+  const inquiries = filter === "new" ? fresh : filter === "handled" ? handled : all;
 
   const tabs: { id: InquiryFilter; label: string; count: number }[] = [
-    { id: "new", label: "New", count: stats.newInquiries },
-    { id: "handled", label: "Handled", count: stats.handledInquiries },
-    { id: "all", label: "All", count: stats.newInquiries + stats.handledInquiries },
+    { id: "new", label: "New", count: fresh.length },
+    { id: "handled", label: "Handled", count: handled.length },
+    { id: "all", label: "All", count: all.length },
   ];
 
   return (
@@ -37,6 +41,7 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/admin/
           <Link
             key={id}
             href={id === "new" ? "/admin/inquiries" : `/admin/inquiries?show=${id}`}
+            prefetch
             aria-current={filter === id ? "page" : undefined}
             className={cn(
               "rounded-md px-3 py-1.5 text-sm transition-colors",

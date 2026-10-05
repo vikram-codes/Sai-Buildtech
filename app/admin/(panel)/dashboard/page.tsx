@@ -2,18 +2,21 @@ import type { Metadata } from "next";
 import { Plus } from "lucide-react";
 import { ListingsTable } from "@/components/admin/listings-table";
 import { Button } from "@/components/ui/button";
-import { getAdminProperties, getAdminStats } from "@/lib/data/admin";
+import { getAdminProperties, getNewInquiryCount } from "@/lib/data/admin";
 
 export const metadata: Metadata = { title: "Listings" };
 
 export default async function DashboardPage() {
-  const [properties, stats] = await Promise.all([getAdminProperties(), getAdminStats()]);
+  // Two queries side by side; listing counts are worked out from the list itself
+  const [properties, newInquiries] = await Promise.all([getAdminProperties(), getNewInquiryCount()]);
+  const hidden = properties.filter((p) => !p.is_published).length;
+  const featured = properties.filter((p) => p.featured).length;
 
   const summary = [
-    `${stats.listings} ${stats.listings === 1 ? "listing" : "listings"}`,
-    `${stats.hiddenListings} hidden`,
-    `${stats.featuredListings} featured`,
-    `${stats.newInquiries} new ${stats.newInquiries === 1 ? "inquiry" : "inquiries"}`,
+    `${properties.length} ${properties.length === 1 ? "listing" : "listings"}`,
+    `${hidden} hidden`,
+    `${featured} featured`,
+    `${newInquiries} new ${newInquiries === 1 ? "inquiry" : "inquiries"}`,
   ];
 
   return (

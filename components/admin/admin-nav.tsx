@@ -22,6 +22,8 @@ export function AdminNav({ newInquiries }: { newInquiries: number }) {
             <li key={href}>
               <Link
                 href={href}
+                // Load the other tab's data in the background (production builds), so switching is instant
+                prefetch
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-2 border-b-2 py-3 text-sm font-medium transition-colors",
