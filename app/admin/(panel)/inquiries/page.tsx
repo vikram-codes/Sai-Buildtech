@@ -41,7 +41,6 @@ export default async function InquiriesPage({ searchParams }: PageProps<"/admin/
           <Link
             key={id}
             href={id === "new" ? "/admin/inquiries" : `/admin/inquiries?show=${id}`}
-            prefetch
             aria-current={filter === id ? "page" : undefined}
             className={cn(
               "rounded-md px-3 py-1.5 text-sm transition-colors",
