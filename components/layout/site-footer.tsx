@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cacheLife } from "next/cache";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
@@ -12,6 +13,13 @@ const plural = (type: string) => (type === "Commercial" ? "Commercial" : `${type
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
   return <h2 className="mb-4 font-sans text-xs font-semibold tracking-[0.2em] text-gold uppercase">{children}</h2>;
+}
+
+// Copyright year, cached so the footer can be prerendered (refreshes daily, so it rolls over on 1 Jan)
+async function CurrentYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
 }
 
 const linkClass = "text-sm text-muted-foreground transition-colors hover:text-foreground";
@@ -107,7 +115,7 @@ export function SiteFooter() {
         {/* Extra bottom padding on phones so the floating WhatsApp button doesn't cover this row */}
         <Container className="flex flex-col items-center justify-between gap-2 pt-5 pb-24 text-xs text-muted-foreground sm:flex-row sm:pb-5">
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+            © <CurrentYear /> {siteConfig.name}. All rights reserved.
           </p>
           <Link href="/admin/login" className="transition-colors hover:text-foreground">
             Admin login
