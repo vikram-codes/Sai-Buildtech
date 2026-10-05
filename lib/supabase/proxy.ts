@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
+import type { Database } from "@/types/database";
 
 /**
  * Runs on every page request (via /proxy.ts). Refreshes an expiring login session and
@@ -10,7 +11,7 @@ import { supabasePublishableKey, supabaseUrl } from "@/lib/supabase/env";
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(supabaseUrl, supabasePublishableKey, {
+  const supabase = createServerClient<Database>(supabaseUrl, supabasePublishableKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

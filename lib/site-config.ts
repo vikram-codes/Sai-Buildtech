@@ -3,8 +3,11 @@
  * Change a phone number, address or link here and it updates everywhere.
  */
 
-export const CITIES = ["Delhi", "Noida", "Gurugram"] as const;
-export type City = (typeof CITIES)[number];
+import { Constants, type Enums } from "@/types/database";
+
+// Comes from the database's `city` list — add a city with a migration, not here.
+export const CITIES = Constants.public.Enums.city;
+export type City = Enums<"city">;
 
 export const siteConfig = {
   name: "Sai Buildtech",

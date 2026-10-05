@@ -7,7 +7,9 @@
  *   formatArea(2400)                → "2,400 sq.ft."
  */
 
-export type ListingType = "Sale" | "Rent";
+import type { Enums } from "@/types/database";
+
+export type ListingType = Enums<"listing_type">;
 
 const LAKH = 1_00_000;
 const CRORE = 1_00_00_000;
@@ -15,17 +17,22 @@ const CRORE = 1_00_00_000;
 const inr = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
 const upTo2Decimals = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 });
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
+// Round `price / unit` to 2 decimals. Dividing by unit/100 first keeps the maths exact
+// (e.g. 1,00,50,000 → 1.01 Cr; `1.005 * 100` would give 100.4999… and round down).
+const round2 = (price: number, unit: number) => Math.round(price / (unit / 100)) / 100;
 
-/** Short price in Lakh / Crore, e.g. "₹2.5 Cr". Rent gets a "/month" suffix. */
+/**
+ * Short price in Lakh / Crore, e.g. "₹2.5 Cr". Rent gets a "/month" suffix.
+ * Mirrored in SQL by private.format_price (supabase/migrations/0001_properties.sql) — change both together.
+ */
 export function formatPrice(price: number, listingType: ListingType = "Sale"): string {
   const suffix = listingType === "Rent" ? "/month" : "";
 
   // Round first, so 99.999 L becomes 1 Cr rather than "100 L"
-  const crores = round2(price / CRORE);
+  const crores = round2(price, CRORE);
   if (crores >= 1) return `₹${upTo2Decimals.format(crores)} Cr${suffix}`;
 
-  const lakhs = round2(price / LAKH);
+  const lakhs = round2(price, LAKH);
   if (lakhs >= 1) return `₹${upTo2Decimals.format(lakhs)} L${suffix}`;
 
   return `₹${inr.format(price)}${suffix}`;
