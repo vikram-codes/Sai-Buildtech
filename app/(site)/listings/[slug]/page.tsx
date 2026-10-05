@@ -8,10 +8,10 @@ import { Amenities } from "@/components/property-detail/amenities";
 import { ContactCard, propertyWhatsAppMessage } from "@/components/property-detail/contact-card";
 import { Gallery } from "@/components/property-detail/gallery";
 import { KeyDetails } from "@/components/property-detail/key-details";
-import { LocationMap } from "@/components/property-detail/location-map";
 import { MobileContactBar } from "@/components/property-detail/mobile-contact-bar";
 import { FeaturedBadge, ListingTypeBadge, StatusBadge } from "@/components/property/listing-badges";
 import { PropertyCard } from "@/components/property/property-card";
+import { MapEmbed } from "@/components/shared/map-embed";
 import { getPropertyBySlug, getPublishedSlugs, getSimilarProperties, type Property } from "@/lib/data/properties";
 import { formatPrice } from "@/lib/format";
 import { catalogueUrl } from "@/lib/listings-url";
@@ -144,7 +144,11 @@ export default async function PropertyPage({ params }: PageProps<"/listings/[slu
             <p className="text-muted-foreground">
               {property.location}, {property.city}. Exact address shared on enquiry.
             </p>
-            <LocationMap location={property.location} city={property.city} />
+            {/* Locality only — never an exact address */}
+            <MapEmbed
+              query={`${property.location}, ${property.city}, India`}
+              title={`Map of ${property.location}, ${property.city}`}
+            />
           </Section>
         </div>
 

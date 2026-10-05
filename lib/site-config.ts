@@ -27,7 +27,14 @@ export const siteConfig = {
       line2: "Krishna Nagar, Delhi 110051",
       full: "70 Radhey Shyam Park, Parwana Road, Krishna Nagar, Delhi 110051",
     },
+    // ⚠️ PLACEHOLDER — real opening hours not confirmed yet. Update both lines together.
     hours: "Mon – Sat, 10:00 AM – 7:00 PM",
+    /** Same hours in machine-readable form (for Google's business listing data on /contact). */
+    openingHours: {
+      days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      opens: "10:00",
+      closes: "19:00",
+    },
   },
 
   cities: CITIES,

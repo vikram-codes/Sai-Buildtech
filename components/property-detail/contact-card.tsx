@@ -1,5 +1,5 @@
 import { Phone } from "lucide-react";
-import { InquiryForm } from "@/components/property-detail/inquiry-form";
+import { InquiryForm } from "@/components/shared/inquiry-form";
 import { WhatsAppIcon } from "@/components/shared/whatsapp-icon";
 import { Button } from "@/components/ui/button";
 import type { Property } from "@/lib/data/properties";
