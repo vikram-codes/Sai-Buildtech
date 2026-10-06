@@ -105,8 +105,10 @@ export function RowLinks({ property }: { property: AdminProperty }) {
           <ExternalLink />
         </Link>
       </Button>
-      <Button variant="ghost" size="icon-sm" disabled title="Editing arrives in the next update" aria-label="Edit (coming soon)">
-        <Pencil />
+      <Button asChild variant="ghost" size="icon-sm" title="Edit">
+        <Link href={`/admin/listings/${property.id}/edit`} aria-label={`Edit "${property.title}"`}>
+          <Pencil />
+        </Link>
       </Button>
       <ConfirmDialog
         title={`Delete "${property.title}"?`}

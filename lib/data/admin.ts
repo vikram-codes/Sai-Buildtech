@@ -71,3 +71,12 @@ export async function getNewInquiryCount(): Promise<number> {
   if (error) fail("getNewInquiryCount", error);
   return count ?? 0;
 }
+
+/** One listing with every field, for the edit form. Null if the id is malformed or not found. */
+export async function getAdminProperty(id: string): Promise<Tables<"properties"> | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("properties").select("*").eq("id", id).maybeSingle();
+  if (error) fail("getAdminProperty", error);
+  return data;
+}

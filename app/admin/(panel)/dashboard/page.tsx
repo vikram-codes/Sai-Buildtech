@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { ListingsTable } from "@/components/admin/listings-table";
 import { Button } from "@/components/ui/button";
@@ -26,8 +27,10 @@ export default async function DashboardPage() {
           <h1 className="text-3xl sm:text-4xl">Listings</h1>
           <p className="mt-2 text-sm text-muted-foreground">{summary.join(" · ")}</p>
         </div>
-        <Button disabled title="Adding listings arrives in the next update">
-          <Plus /> Add listing
+        <Button asChild>
+          <Link href="/admin/listings/new">
+            <Plus /> Add listing
+          </Link>
         </Button>
       </header>
 
