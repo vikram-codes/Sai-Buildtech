@@ -19,7 +19,8 @@ export function RotatingWord({ words, intervalMs = 2800 }: { words: readonly str
   }, [reduce, words.length, intervalMs]);
 
   return (
-    <span className="relative inline-block overflow-hidden pb-[0.12em] align-bottom">
+    // Clip only top/bottom (for the slide animation) — clipping the sides cut off the italic letters' overhang
+    <span className="relative inline-block overflow-x-visible overflow-y-clip pr-[0.1em] pb-[0.12em] align-bottom">
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={words[index]}
