@@ -21,7 +21,7 @@ export const siteConfig = {
     phoneHref: "tel:+918287829725",
     // Digits only, with country code — format required by wa.me links
     whatsapp: "918287829725",
-    email: "info@saibuildtech.com", // placeholder until the real address is confirmed
+    email: "saibuildtech110@gmail.com",
     address: {
       line1: "70 Radhey Shyam Park, Parwana Road",
       line2: "Krishna Nagar, Delhi 110051",
